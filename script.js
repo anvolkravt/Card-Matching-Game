@@ -53,6 +53,8 @@ class MixOrMatch {
     this.timeRemaining = this.totalTime;
     this.matchedCards = [];
     this.busy = true;
+
+    this.shuffleCards();
   }
 
   flipCard(card) {
@@ -60,6 +62,17 @@ class MixOrMatch {
       this.audioController.flip();
       this.totalClicks++;
       this.ticker.innerText = this.totalClicks;
+      card.classList.add('visible');
+
+      // if statement
+    }
+  }
+
+  shuffleCards() {
+    for (let i = this.cardsArray.length - 1; i > 0; i--) {
+      let randomIndex = Math.floor(Math.random() * (i + 1));
+      this.cardsArray[randomIndex].style.order = i;
+      this.cardsArray[i].style.order = randomIndex;
     }
   }
 
