@@ -54,7 +54,31 @@ class MixOrMatch {
     this.matchedCards = [];
     this.busy = true;
 
-    this.shuffleCards();
+    setTimeout(() => {
+      this.audioController.startMusic();
+      this.shuffleCards();
+      this.countDown = this.startCountDown();
+      this.busy = false;
+    }, 500);
+
+    this.hideCards();
+    this.timer.innerText = this.timeRemaining;
+    this.ticker.innerText = this.totalClicks;
+  }
+
+  startCountDown() {
+    return setInterval(() => {
+      this.timeRemaining--;
+      this.timer.innerText = this.timeRemaining;
+      if (this.timeRemaining === 0) this.gameOver();
+    }, 1000);
+  }
+
+  hideCards() {
+    this.cardsArray.forEach(card => {
+      card.classList.remove('visible');
+      card.classList.remove('matched');
+    });
   }
 
   flipCard(card) {
@@ -64,8 +88,33 @@ class MixOrMatch {
       this.ticker.innerText = this.totalClicks;
       card.classList.add('visible');
 
-      // if statement
+      if (this.cardToCheck) {
+        this.checkForCardMatch(card);
+      } else {
+        this.cardToCheck = card;
+      }
     }
+  }
+
+  checkForCardMatch(card) {
+    if (this.getCardType(card) === this.getCardType(this.cardToCheck))
+      this.cardMatch(card, this.cardToCheck);
+    else this.cardMisMatch(card, this.cardToCheck);
+  }
+
+  cardMatch(card1, card2) {
+    this.matchedCards.push(card1);
+    this.matchedCards.push(card2);
+    card1.classList.add('matched');
+    card2.classList.add('matched');
+    this.audioController.match();
+    if (this.matchedCards.length === this.cardsArray) this.victory();
+  }
+
+  cardMisMatch(card) {}
+
+  getCardType(card) {
+    return card.getElementsByClassName('card-value')[0].src;
   }
 
   shuffleCards() {
@@ -84,6 +133,18 @@ class MixOrMatch {
     //   card !== this.cardToCheck
     // );
   }
+
+  gameOver() {
+    clearInterval(this.countDown);
+    this.audioController.gameOver();
+    document.getElementById('game-over-text').classList.add('visible');
+  }
+
+  victory() {
+    clearInterval(this.countDown);
+    this.audioController.victory();
+    document.getElementById('victory-text').classList.add('visible');
+  }
 }
 
 function ready() {
@@ -95,8 +156,6 @@ function ready() {
     overlay.addEventListener('click', () => {
       overlay.classList.remove('visible');
       game.startGame();
-      let audioController = new AudioController();
-      audioController.startMusic();
     });
   });
 
