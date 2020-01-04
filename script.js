@@ -17,6 +17,24 @@ class AudioController {
     this.bgMusic.pause();
     this.bgMusic.currentTime = 0;
   }
+
+  flip() {
+    this.flipSound.play();
+  }
+
+  match() {
+    this.matchSound.play();
+  }
+
+  victory() {
+    this.stopMusic();
+    this.victorySound.play();
+  }
+
+  gameOver() {
+    this.stopMusic();
+    this.gameOverSound.play();
+  }
 }
 
 function ready() {
